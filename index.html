@@ -1103,6 +1103,30 @@ const REF={mw:P(`个|gè|general measure word|كلمة عدّ عامّة (للأ
 近|jìn|near|قريب|食堂很近。|Shítáng hěn jìn.|المطعم قريب.
 离|lí|(distance) from|يبعد عن|宿舍离教学楼很近。|Sùshè lí jiàoxuélóu hěn jìn.|السكن قريب من مبنى الدراسة.
 `)};
+/* word types: one word may sit in several groups */
+const WTYPES=[['v','الأفعال'],['aux','الأفعال المساعدة'],['adj','الصفات'],['pron','الضمائر'],['qw','أدوات الاستفهام'],['adv','الظروف'],['conj','الربط وحروف الجر'],['part','الأدوات'],['num','الأعداد'],['time','الوقت والأعياد'],['people','الناس والأسرة'],['place','الأماكن'],['food','الطعام والشراب'],['things','الأشياء'],['names','بلدان ولغات وأسماء'],['phr','عبارات جاهزة']];
+const WSRC={
+v:'去 来 买 喝 跑 看 听 喜欢 叫 是 吃 认识 有 没有 工作 在 住 请 进 睡觉 起床 上课 下课 锻炼 洗澡 说 写 玩儿 参观 到 做客 打电话 进来 出去 写完 看见 听懂 病 感冒 发烧 点菜 学习 要 走 搬家 拍 教 放假 打 运动 修 贴 放 下雨 做 回国 姓 试 坐 骑 等 问 给 送 丢 找 想 拐 吃饭 睡 说话 开 回 回去 读',
+aux:'会 能 可以 要 想',
+adj:'好 大 忙 累 高 饿 难 冷 新 干净 漂亮 可爱 马马虎虎 安静 便宜 贵 流利 愉快 远 近 好吃 快 坏 热 高兴 慢 努力 多 真 对 有意思',
+pron:'你 我 他 她 它 您 你们 我们 他们 这 那 这儿 那儿 每 这么',
+qw:'什么 谁 哪 哪儿 多少 几 怎么样 为什么 什么时候 怎么办 吗 呢 还是',
+adv:'不 很 也 还 太 真 非常 都 一共 一直 已经 正在 最 没 先 然后 就 才 有点儿 一点儿 别 一边',
+conj:'和 还是 因为 所以 如果 虽然 但是 除了 而且 为了 以外 从 到 比 往 离 给 在',
+part:'吗 的 呢 吧 啊 了 过 得 着 地',
+num:'一 二 三 四 五 六 七 八 九 十 两 二十 百 半',
+time:'今天 明天 昨天 星期 月 年 今年 天 早上 上午 下午 晚上 每天 现在 小时 时间 时候 有时候 周末 星期一 星期二 星期三 星期四 星期五 星期六 星期天 生日 春天 夏天 秋天 冬天 节日 春节 中秋节 圣诞节 新年 半 刻',
+people:'爸爸 妈妈 哥哥 弟弟 妹妹 姐姐 朋友 老师 学生 人 医生 同学 同屋 留学生 服务员 师傅 男 女',
+place:'学校 图书馆 食堂 教学楼 教室 操场 楼房 房间 楼 洗衣房 洗手间 咖啡馆 厨房 卫生间 公园 饭店 超市 博物馆 医院 银行 宿舍 大学 房子 公寓 体育馆 小区 国 班',
+food:'咖啡 可乐 茶 水果 牛奶 面包 饺子 菜 月饼 苹果 香蕉 中餐 西餐 米饭 面条 饭 早饭 午饭 晚饭 菜单',
+things:'马 包 报 钱 书 名字 床 桌子 椅子 书架 衣柜 门 钟 狗 东西 个子 头发 电影 礼物 电话卡 手机 号码 护照 邮件 天气 气温 药 生活 火车 汽车 自行车 地铁 飞机 照片 乒乓球 电脑 电视 新闻 问题 墙 笔 本子 词典 杯子 花 树 衣服 颜色 银行卡 钱包 语音',
+names:'中国 美国 韩国 日本 法国 北京 上海 天津 汉语 英语 阿拉伯语 王 大卫 皮尔',
+phr:'谢谢 再见 不客气 对不起 没关系 请问 哪里 贵姓 怎么办 马马虎虎',
+mw:'个 本 岁 号 块 口 层 家 张 把 点 分 次 封 毛 斤 支 件 度 杯',
+pos:'上 里 前 后 左 右'};
+const WCAT={};Object.keys(WSRC).forEach(k=>WSRC[k].split(' ').forEach(w=>(WCAT[w]=WCAT[w]||[]).push(k)));
+REF.mw.forEach(w=>(WCAT[w[0]]=WCAT[w[0]]||[]).push('mw'));REF.pos.forEach(w=>(WCAT[w[0]]=WCAT[w[0]]||[]).push('pos'));
+function vocabWords(){let ws=allWords(flt.book);if(flt.wc&&flt.book!=='mw'&&flt.book!=='pos')ws=ws.filter(w=>flt.wc==='other'?!WCAT[w[0]]:(WCAT[w[0]]||[]).includes(flt.wc));return ws}
 /* questions & answers: cat|q zh|q py|q ar|a zh|a py|a ar */
 const QCATS=[['all','الكل'],['ma','吗'],['anb','A不A'],['ne','呢'],['what','什么'],['who','谁'],['where','哪 · 哪儿'],['num','几 · 多少'],['price','多少钱'],['how','怎么样 · 怎么'],['or','还是'],['time','الوقت'],['why','为什么'],['tag','吧 · 好吗']];
 const QA=P(`ma|你好吗？|Nǐ hǎo ma?|كيف حالك؟|我很好，谢谢。|Wǒ hěn hǎo, xièxie.|أنا بخير، شكرًا.
@@ -1184,7 +1208,14 @@ tag|我可以进来吗？|Wǒ kěyǐ jìnlai ma?|هل يمكنني الدخول�
 tag|便宜一点儿，可以吗？|Piányi yìdiǎnr, kěyǐ ma?|أرخص قليلًا، ممكن؟|好吧，二十块。|Hǎo ba, èrshí kuài.|حسنًا، عشرون يوانًا.
 `);
 /* extra words that appear in lesson sentences / grammar examples but in no lesson list */
-const EXTRA=P(`语音|yǔyīn|phonetics|الصوتيات
+const EXTRA=P(`同屋|tóngwū|roommate|زميل الغرفة
+桌子|zhuōzi|table, desk|طاولة
+教室|jiàoshì|classroom|غرفة الصف
+钟|zhōng|clock|ساعة حائط
+读|dú|to read aloud|يقرأ (بصوت)
+对|duì|right, correct|صحيح
+有意思|yǒu yìsi|interesting|ممتع
+语音|yǔyīn|phonetics|الصوتيات
 里|lǐ|inside|داخل
 时候|shíhou|time, moment|وقت
 什么时候|shénme shíhou|when|متى
@@ -1303,7 +1334,7 @@ const SPK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wid
 const sp=(t,c)=>`<button class="sp ${c||''}" data-a="say" data-t="${esc(t)}" aria-label="استمع">${SPK}</button>`;
 
 /* ================= VIEWS ================= */
-let V={v:'home'},stack=[],F=null,Q=null,TQs=null,flt={q:'',book:'',cat:'q',pc:'v',qc:'all',qh:false,hz:false,py:false};
+let V={v:'home'},stack=[],F=null,Q=null,TQs=null,flt={q:'',book:'',cat:'q',wc:'',pc:'v',qc:'all',qh:false,hz:false,py:false};
 function go(v,a){stack.push(V);V=Object.assign({v},a||{});render(true)}
 function back(){V=stack.pop()||{v:'home'};render(true)}
 function tab(v){stack=[];V={v};render(true)}
@@ -1372,8 +1403,8 @@ function grammar(){const q=flt.q.trim();const ids=Object.keys(G).filter(id=>q?(G
  return `<h1>القواعد</h1><p class="sub">كل قواعد الكتب الثلاثة مرتّبة حسب الاستعمال.</p><button class="les" data-a="go" data-v="pron"><span class="num zh kai">音</span><span class="grow"><span class="t" style="font-size:16px">قواعد كتابة البينيين وتغيّر النغمات</span><br><span class="s">y / w / ü · موضع علامة النغمة · 不 و 一 · النغمة الثالثة</span></span><span>‹</span></button><input class="search" id="gq" placeholder="ابحث: 吗 ، النفي ، 了 …" value="${esc(flt.q)}">
  ${q?'':`<div class="tabs" style="flex-wrap:wrap;overflow:visible">${CATS.map(c=>`<button class="chip ${flt.cat===c[0]?'on':''}" data-a="cat" data-c="${c[0]}">${c[1]}</button>`).join('')}</div>`}
  <div id="glist">${ids.map(id=>gCard(id,ids.length<4)).join('')||'<div class="note">لا نتائج.</div>'}</div>`}
-function vocabList(){if(flt.book==='mw'||flt.book==='pos')return refList(flt.book);const q=flt.q.trim().toLowerCase();let ws=allWords(flt.book);if(q)ws=ws.filter(w=>w[0].includes(q)||w[1].toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').includes(q.normalize('NFD').replace(/[̀-ͯ]/g,''))||w[2].toLowerCase().includes(q)||(w[3]||'').includes(q));return `<div class="sub">${arN(ws.length)} كلمة · النقطة الخضراء = محفوظة</div><div class="card">${ws.map(w=>wordRow(w)).join('')||'لا نتائج'}</div>`}
-function vocab(){return `<h1>كل الكلمات</h1><p class="sub">الصيني · البينيين · الإنجليزي · العربي</p><input class="search" id="vq" placeholder="ابحث بالصيني أو pinyin أو English أو العربي" value="${esc(flt.q)}"><div class="tabs" style="flex-wrap:wrap;overflow:visible"><button class="chip ${!flt.book?'on':''}" data-a="vb" data-b="">الكل</button>${BOOKS.map(b=>`<button class="chip zh ${flt.book===b.id?'on':''}" data-a="vb" data-b="${b.id}">${b.seal} ${b.zh.split(' · ').pop()}</button>`).join('')}<button class="chip ${flt.book==='mw'?'on':''}" data-a="vb" data-b="mw"><span class="zh">量</span> كلمات العدّ</button><button class="chip ${flt.book==='pos'?'on':''}" data-a="vb" data-b="pos"><span class="zh">方</span> المواقع والاتجاهات</button></div><div class="btns" style="margin-bottom:12px"><button class="btn" data-a="vflash">بطاقات</button><button class="btn alt" data-a="vquiz">اختبار</button></div><div id="vlist">${vocabList()}</div>`}
+function vocabList(){if(flt.book==='mw'||flt.book==='pos')return refList(flt.book);const q=flt.q.trim().toLowerCase();let ws=vocabWords();if(q)ws=ws.filter(w=>w[0].includes(q)||w[1].toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').includes(q.normalize('NFD').replace(/[̀-ͯ]/g,''))||w[2].toLowerCase().includes(q)||(w[3]||'').includes(q));return `<div class="sub">${arN(ws.length)} كلمة · النقطة الخضراء = محفوظة</div><div class="card">${ws.map(w=>wordRow(w)).join('')||'لا نتائج'}</div>`}
+function vocab(){return `<h1>كل الكلمات</h1><p class="sub">الصيني · البينيين · الإنجليزي · العربي</p><input class="search" id="vq" placeholder="ابحث بالصيني أو pinyin أو English أو العربي" value="${esc(flt.q)}"><div class="tabs" style="flex-wrap:wrap;overflow:visible"><button class="chip ${!flt.book?'on':''}" data-a="vb" data-b="">الكل</button>${BOOKS.map(b=>`<button class="chip zh ${flt.book===b.id?'on':''}" data-a="vb" data-b="${b.id}">${b.seal} ${b.zh.split(' · ').pop()}</button>`).join('')}</div><div class="sub" style="margin:0 0 6px">حسب النوع</div><div class="tabs" style="flex-wrap:wrap;overflow:visible;margin-top:0"><button class="chip ${!flt.wc&&flt.book!=='mw'&&flt.book!=='pos'?'on':''}" data-a="wc" data-c="">كل الأنواع</button>${WTYPES.map(c=>`<button class="chip ${flt.wc===c[0]?'on':''}" data-a="wc" data-c="${c[0]}">${c[1]}</button>`).join('')}<button class="chip ${flt.book==='mw'?'on':''}" data-a="vref" data-b="mw"><span class="zh">量</span> كلمات العدّ</button><button class="chip ${flt.book==='pos'?'on':''}" data-a="vref" data-b="pos"><span class="zh">方</span> المواقع والاتجاهات</button>${allWords().some(w=>!WCAT[w[0]])?`<button class="chip ${flt.wc==='other'?'on':''}" data-a="wc" data-c="other">أخرى</button>`:''}</div><div class="btns" style="margin-bottom:12px"><button class="btn" data-a="vflash">بطاقات</button><button class="btn alt" data-a="vquiz">اختبار</button></div><div id="vlist">${vocabList()}</div>`}
 function chars(){return `<h1>حفظ الأحرف</h1><p class="sub">${arN(CH.length)} حرفًا أساسيًا من الدروس الأولى. اضغط على الحرف لترى أجزاءه وقصته.</p><div class="btns" style="margin-bottom:12px"><button class="btn" data-a="cflash">بطاقات الأحرف</button><button class="btn alt" data-a="cquiz">اختبار الأحرف</button></div><div class="note">سرّ الحفظ: العائلات. أدوات الفم 口: <span class="zh">吗 呢 吧 哪 叫</span> · الكلام 讠: <span class="zh">语 请 谢 谁</span> · المرأة 女: <span class="zh">好 她 妈 姐 妹</span> · الصوت يدلّك: <span class="zh">马 → 吗 妈</span> ، <span class="zh">门 → 们 问</span></div><div class="grid">${CH.map((c,i)=>`<button class="ch zh kai" data-a="ch" data-i="${i}">${c[0]}<span class="dot b${boxOf(c[0])}"></span></button>`).join('')}</div>`}
 function pron(){
  if(!TQs)TQs={q:shuffle(TQ)[0],r:null,n:0,ok:0};
@@ -1411,8 +1442,8 @@ const A={
  lflash:()=>{const l=lesson(V.b,V.n);startFlash(lw(V.b,l),l.t)},
  lquiz:()=>{const l=lesson(V.b,V.n);startQuiz(lw(V.b,l),l.t)},
  llisten:()=>{const l=lesson(V.b,V.n);startQuiz(lw(V.b,l),'استماع · '+l.t,['l2h'])},
- vflash:()=>startFlash(allWords(flt.book),'بطاقات الكلمات'),
- vquiz:()=>startQuiz(allWords(flt.book),'اختبار الكلمات'),
+ vflash:()=>startFlash(vocabWords(),'بطاقات الكلمات'),
+ vquiz:()=>startQuiz(vocabWords(),'اختبار الكلمات'),
  cflash:()=>startFlash(chW(),'بطاقات الأحرف'),
  cquiz:()=>startQuiz(CH.map(c=>[c[0],c[1],'',c[2]]),'اختبار الأحرف',['h2m','h2p','l2h']),
  review:()=>{const due=allWords().filter(w=>S.box[w[0]]&&S.box[w[0]].d<=today());if(due.length)startFlash(due,'مراجعة اليوم');else{const b=BOOKS.find(b=>b.lessons.some(l=>!S.done[b.id+l.n]))||BOOKS[0];const l=b.lessons.find(l=>!S.done[b.id+l.n])||b.lessons[0];toast('لا مراجعات مستحقّة — نبدأ بكلمات جديدة');startFlash(lw(b.id,l),l.t)}},
@@ -1424,6 +1455,7 @@ const A={
  qn:()=>{Q.i++;Q.ans=null;render(true);if(Q.i<Q.qs.length&&Q.qs[Q.i].t==='l2h')say(Q.qs[Q.i].w[0])},
  cat:d=>{flt.cat=d.c;render()},
  pc:d=>{flt.pc=d.c;flt.q='';render()},
+ wc:d=>{flt.wc=d.c;if(flt.book==='mw'||flt.book==='pos')flt.book='';render()},vref:d=>{flt.book=d.b;flt.wc='';render()},
  qc:d=>{flt.qc=d.c;flt.q='';render()},qh:()=>{flt.qh=!flt.qh;render()},qrev:(d,el)=>el.classList.remove('hide'),
  vb:d=>{flt.book=d.b;render()},
  ch:d=>{const c=CH[+d.i];say(c[0]);$('#sheet').innerHTML=`<div class="in"><div class="hz zh kai">${c[0]}</div><div class="py" style="font-size:22px">${c[1]}</div><div style="font-size:18px;margin:4px 0 10px">${c[2]}</div><div class="card" style="text-align:start"><b>الأجزاء:</b> <span class="zh">${c[3]}</span><br><b>القصة:</b> ${c[4]}</div><div class="btns"><button class="btn alt" data-a="say" data-t="${c[0]}">🔊 استمع</button><button class="btn" data-a="close">تم</button></div><p class="sub" style="margin:10px 0 0">اكتب الحرف على الورق ٥ مرات وأنت تنطقه.</p></div>`;$('#sheet').classList.add('on')},
